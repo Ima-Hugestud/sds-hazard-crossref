@@ -1,0 +1,38 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Runtime data — lives in the user's cache dir (via platformdirs), not the repo
+input/
+output/
+cache/
+
+# --- ACGIH TLV data ---------------------------------------------------------
+# ACGIH TLV values are commercially licensed and must NEVER be committed to
+# this repo. If you have a licensed ACGIH dataset, point the tool at it via
+# the local-file config option documented in the README — that file must
+# live outside version control. This pattern is enforced here explicitly,
+# not left to chance.
+acgih_local.csv
+acgih_local.json
+*acgih*.csv
+*acgih*.json
+
+# --- hand-maintained regulatory data caches ---------------------------------
+# Fetched/refreshed data snapshots (from --refresh-data) are cached locally,
+# not committed — the in-repo copies of hand-maintained sources live under
+# src/sds_hazard_crossref/data/ and ARE version-controlled; this only excludes
+# the user's local refresh cache.
+.sds-hazard-crossref-cache/
