@@ -1,0 +1,26 @@
+SECTION 1: IDENTIFICATION
+Product Name: Generic Acetone, Technical Grade
+Manufacturer: Example Chemical Supply Co.
+Revision Date: 2026-01-15
+Recommended Use: Laboratory solvent
+
+SECTION 2: HAZARDS IDENTIFICATION
+Highly flammable liquid and vapor. Causes serious eye irritation.
+
+SECTION 3: COMPOSITION/INFORMATION ON INGREDIENTS
+Chemical Name          CAS Number      Concentration
+Acetone                 67-64-1         95-100%
+Water                   7732-18-5       0-5%
+
+SECTION 4: FIRST AID MEASURES
+If in eyes, rinse cautiously with water.
+
+SECTION 8: EXPOSURE CONTROLS/PERSONAL PROTECTION
+Use in a well-ventilated area. Wear chemical splash goggles.
+
+SECTION 11: TOXICOLOGICAL INFORMATION
+No additional toxicological data available beyond standard classifications.
+
+SECTION 15: REGULATORY INFORMATION
+This product is not known to contain any substance subject to a
+Proposition 65 warning requirement at this time.
