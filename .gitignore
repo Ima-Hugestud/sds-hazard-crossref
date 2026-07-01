@@ -36,3 +36,8 @@ acgih_local.json
 # src/sds_hazard_crossref/data/ and ARE version-controlled; this only excludes
 # the user's local refresh cache.
 .sds-hazard-crossref-cache/
+
+# Real regulatory data pulled via sds-crossref-refresh-data — regenerate
+# locally with that command rather than committing a snapshot that goes stale.
+tri_data.csv
+tri_data.raw.json

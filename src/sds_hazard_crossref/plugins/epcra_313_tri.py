@@ -19,6 +19,20 @@ are unambiguous, long-standing TRI entries, explicitly labeled as a test
 fixture — not a production dataset. Populating a real data file is a
 `--refresh-data` task (pulling EPA's actual bulk CSV or Envirofacts API),
 not something to fabricate here.
+
+TRI includes ~38 chemical *categories* (e.g. "Antimony compounds",
+"Certain glycol ethers") alongside individually-CAS-numbered substances.
+EPA's data represents these with an internal category code (e.g. "N010")
+in the same field individual entries use for a CAS number — never a real
+CAS, and never blank in practice, though this plugin also handles a truly
+blank field defensively. `normalize_cas()` correctly rejects a category
+code as not CAS-shaped, so these entries get a separate lookup path:
+matched only by an *exact* normalized-name match against the category's
+own listed name (e.g. a component literally named "Antimony compounds" on
+an SDS), never fuzzy-matched against individual substances in that
+category. `ListHit.match_method` is "category_name" for these — distinct
+from "cas" and "name" — so a report never implies CAS-level confidence for
+what is, by definition, a broader category-level determination.
 """
 
 import csv
@@ -48,6 +62,7 @@ class EPCRATriPlugin(HazardListPlugin):
         self._data_as_of_value = data_as_of
         self._by_cas: dict[str, str] = {}  # cas -> chemical_name
         self._by_name: dict[str, str] = {}  # normalized name -> cas
+        self._category_by_name: dict[str, dict] = {}  # normalized name -> {category_code, chemical_name}
         self._category_only_count = 0
         self._loaded = False
 
@@ -68,20 +83,32 @@ class EPCRATriPlugin(HazardListPlugin):
                     continue
 
                 if not raw_cas:
-                    # TRI includes chemical *categories* with no single CAS
-                    # (e.g. "Xylene (mixed isomers)" style category
-                    # entries). These can't be matched via the CAS-primary
-                    # engine; counted so load() can report coverage
-                    # honestly rather than silently dropping them.
+                    # A truly blank CAS field with a name still present.
+                    # Not observed in practice against the live EPA data
+                    # (category entries carry a code, not a blank — see
+                    # below), but handled defensively rather than assumed
+                    # away.
+                    self._category_by_name[normalize_name(name)] = {
+                        "category_code": None,
+                        "chemical_name": name,
+                    }
                     self._category_only_count += 1
                     continue
 
                 cas = normalize_cas(raw_cas)
-                if cas is None:
+                if cas is not None:
+                    self._by_cas[cas] = name
+                    self._by_name[normalize_name(name)] = cas
                     continue
 
-                self._by_cas[cas] = name
-                self._by_name[normalize_name(name)] = cas
+                # Present but not CAS-shaped -> a TRI chemical *category*
+                # entry, keyed by EPA's own category code (e.g. "N010").
+                # Never treated as or confused with a CAS number.
+                self._category_by_name[normalize_name(name)] = {
+                    "category_code": raw_cas,
+                    "chemical_name": name,
+                }
+                self._category_only_count += 1
 
         self._loaded = True
 
@@ -100,7 +127,9 @@ class EPCRATriPlugin(HazardListPlugin):
             )
 
         if name:
-            matched_cas = self._by_name.get(normalize_name(name))
+            normalized = normalize_name(name)
+
+            matched_cas = self._by_name.get(normalized)
             if matched_cas:
                 return ListHit(
                     list_id=self.list_id,
@@ -110,6 +139,29 @@ class EPCRATriPlugin(HazardListPlugin):
                     data_as_of=self._data_as_of_value,
                     details={"tri_listed_name": self._by_cas[matched_cas]},
                     note="Matched by name only — no CAS was available to confirm.",
+                )
+
+            category = self._category_by_name.get(normalized)
+            if category:
+                code = category["category_code"] or "not provided in source data"
+                return ListHit(
+                    list_id=self.list_id,
+                    listed=True,
+                    match_method="category_name",
+                    source_citation=_SOURCE_CITATION,
+                    data_as_of=self._data_as_of_value,
+                    details={
+                        "tri_listed_name": category["chemical_name"],
+                        "tri_category_code": category["category_code"],
+                    },
+                    note=(
+                        "Matched as a TRI chemical CATEGORY, not an individually "
+                        "CAS-numbered substance — no single CAS number applies. "
+                        f"Matched by exact normalized name against EPA's category "
+                        f'"{category["chemical_name"]}" (EPA category code: {code}). '
+                        "Category-level matches carry lower confidence than a CAS "
+                        "match and should be verified against the source SDS."
+                    ),
                 )
 
         return ListHit(
