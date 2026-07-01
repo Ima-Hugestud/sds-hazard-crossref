@@ -19,6 +19,7 @@ Public API:
 from .sds_document import SDSDocument, extract_sds
 from .cas import extract_cas_numbers, normalize_cas, is_valid_cas_checksum
 from .names import normalize_name
+from .composition import Component, extract_components
 
 __all__ = [
     "SDSDocument",
@@ -27,4 +28,6 @@ __all__ = [
     "normalize_cas",
     "is_valid_cas_checksum",
     "normalize_name",
+    "Component",
+    "extract_components",
 ]

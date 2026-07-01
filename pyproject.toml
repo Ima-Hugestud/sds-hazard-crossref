@@ -25,3 +25,6 @@ sds-crossref = "sds_hazard_crossref.main:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["sds_hazard_crossref*"]
+
+[tool.setuptools.package-data]
+sds_hazard_crossref = ["data/*.json"]

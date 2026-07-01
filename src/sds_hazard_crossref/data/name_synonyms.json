@@ -1,0 +1,17 @@
+{
+  "_comment": "Human-curated name -> CAS equivalences for the name-based fallback matcher. Keys are normalize_name() output. Every entry here is a genuine, verifiable synonym for the same substance (matched CAS number) — never add an entry without confirming the equivalence. This is intentionally small; grow it as real SDS documents surface additional manufacturer name variants.",
+  "methyl ethyl ketone": "78-93-3",
+  "mek": "78-93-3",
+  "2-butanone": "78-93-3",
+  "isopropyl alcohol": "67-63-0",
+  "isopropanol": "67-63-0",
+  "2-propanol": "67-63-0",
+  "ipa": "67-63-0",
+  "acetone": "67-64-1",
+  "2-propanone": "67-64-1",
+  "dimethyl ketone": "67-64-1",
+  "toluene": "108-88-3",
+  "methylbenzene": "108-88-3",
+  "water": "7732-18-5",
+  "aqua": "7732-18-5"
+}
