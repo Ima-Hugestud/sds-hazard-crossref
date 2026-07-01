@@ -41,3 +41,10 @@ acgih_local.json
 # locally with that command rather than committing a snapshot that goes stale.
 tri_data.csv
 tri_data.raw.json
+
+# Default output locations for `sds-crossref` — these hold whatever SDS
+# data a user actually processes, which may be real (and possibly
+# sensitive) company inventory data. Never committed, regardless of
+# whether the user runs the tool from inside this repo directory.
+components_master.json
+dispositions.json
