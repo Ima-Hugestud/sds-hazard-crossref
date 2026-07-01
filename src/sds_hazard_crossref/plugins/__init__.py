@@ -7,11 +7,14 @@ defined in `base.py`. See PROJECT_SPEC.md Section 6 for the list of
 plugins planned, and DATA_SOURCES_REFERENCE.md for each source's access
 method (automatable fetch / manual download / hand-maintained in-repo).
 
-No concrete list plugins live here yet — this module currently holds only
-the shared interface. Each plugin is a separate, reviewable increment
-(see PROJECT_SPEC.md's "Working style": one hazard list module per PR).
+No concrete list plugins live here yet, aside from EPCRATriPlugin (EPCRA
+§313/TRI — the strongest-verified automatable source in the registry, see
+DATA_SOURCES_REFERENCE.md row 8). Each additional plugin is a separate,
+reviewable increment (see PROJECT_SPEC.md's "Working style": one hazard
+list module per PR).
 """
 
 from .base import ListHit, HazardListPlugin
+from .epcra_313_tri import EPCRATriPlugin
 
-__all__ = ["ListHit", "HazardListPlugin"]
+__all__ = ["ListHit", "HazardListPlugin", "EPCRATriPlugin"]
