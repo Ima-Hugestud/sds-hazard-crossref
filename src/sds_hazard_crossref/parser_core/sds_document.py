@@ -19,6 +19,8 @@ from pathlib import Path
 
 import fitz  # PyMuPDF
 
+from .composition import find_composition_table
+
 # Every GHS SDS section, 1-16, with the leading keyword(s) used to confirm a
 # candidate header actually names that section (see _parse_sections).
 _GHS_TITLE_KEYWORDS = re.compile(
@@ -78,6 +80,15 @@ class SDSDocument:
     manufacturer: str | None = None
     revision_date: str | None = None
 
+    # Composition table data, extracted directly from real PDF table
+    # geometry while the file was open (see extract_sds()) — plain data,
+    # not a live PDF handle, to avoid file-handle leaks in batch mode.
+    # None if no table matching the composition-table header signature
+    # was found on any page; parser_core.composition falls back to the
+    # text-based strategy in that case.
+    composition_table_rows: list | None = None
+    composition_table_roles: dict | None = None
+
     def section(self, number: int) -> str | None:
         """Text of a single GHS section (1-16), or None if not found."""
         return self.sections.get(number)
@@ -109,6 +120,9 @@ def extract_sds(pdf_path: Path) -> SDSDocument:
         with fitz.open(str(pdf_path)) as pdf:
             doc.page_count = len(pdf)
             doc.full_text = "\n".join(page.get_text() for page in pdf)
+            doc.composition_table_rows, doc.composition_table_roles = (
+                find_composition_table(pdf)
+            )
     except Exception as e:  # pragma: no cover - exact exception varies by
         # PDF corruption mode; any failure here means "flag for manual
         # review", not "crash the batch run" (see PROJECT_SPEC.md scope).

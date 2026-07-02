@@ -12,7 +12,7 @@ from pathlib import Path
 import fitz  # PyMuPDF
 
 from sds_hazard_crossref.parser_core.sds_document import extract_sds
-from sds_hazard_crossref.parser_core.composition import extract_components
+from sds_hazard_crossref.parser_core.composition import extract_components_for_sds
 from sds_hazard_crossref.matching.engine import resolve_component, check_against_lists
 from sds_hazard_crossref.matching.synonyms import load_default_synonym_table
 from sds_hazard_crossref.persistence.component_key import component_key
@@ -48,7 +48,7 @@ def test_full_pipeline_from_pdf_to_master_list(tmp_path):
     sds = extract_sds(pdf_path)
     assert sds.extraction_error is None
 
-    components = extract_components(sds.composition_text)
+    components = extract_components_for_sds(sds)
     assert len(components) == 2
 
     synonym_table = load_default_synonym_table()

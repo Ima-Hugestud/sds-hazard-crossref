@@ -27,7 +27,7 @@ from pathlib import Path
 
 from .matching.engine import check_against_lists, resolve_component
 from .matching.synonyms import load_default_synonym_table
-from .parser_core.composition import extract_components
+from .parser_core.composition import extract_components_for_sds
 from .parser_core.sds_document import extract_sds
 from .persistence.component_key import component_key
 from .persistence.dispositions import apply_dispositions, load_dispositions, save_dispositions
@@ -104,7 +104,7 @@ def process_sds_file(
     if sds.extraction_error:
         return summary
 
-    components = extract_components(sds.composition_text)
+    components = extract_components_for_sds(sds)
     summary["components_found"] = len(components)
     date_processed = date.today().isoformat()
 
